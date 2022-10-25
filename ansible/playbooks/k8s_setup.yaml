@@ -1,4 +1,4 @@
-hosts: all
+- hosts: all
   become: true
   tasks:
 
@@ -28,7 +28,7 @@ hosts: all
       update_cache: yes
     vars:
       packages:
-      - apt-transport-https  
+      - apt-transport-https
       - curl
       - ca-certificates
 
@@ -50,7 +50,7 @@ hosts: all
       state: restarted
       enabled: yes
 
-  # change the Docker cgroup driver by creating a configuration file `/etc/docker/daemon.json` 
+  # change the Docker cgroup driver by creating a configuration file `/etc/docker/daemon.json`
   # and adding the following line then restart deamon, docker and kubelet
 
   - name: change the Docker cgroup
@@ -63,17 +63,17 @@ hosts: all
 
 - hosts: role_master
   tasks:
-      
+
   - name: pull kubernetes images before installation
     become: yes
     shell: kubeadm config images pull
 
   - name: copy the configuration
     become: yes
-    copy: 
+    copy:
       src: ./clusterconfig-base.yml
       dest: /home/ubuntu/
-  
+
   - name: get gettext-base
     become: true
     apt:
@@ -89,7 +89,7 @@ hosts: all
     become: true
     shell: |
       kubeadm init --config /home/ubuntu/clusterconfig.yml
-    
+
   - name: Setup kubeconfig for ubuntu user
     become: true
     command: "{{ item }}"
@@ -133,7 +133,7 @@ hosts: all
       kubectl patch node {{ hostvars[groups['role_worker'][0]]['private_dns_name'] }} -p '{"spec":{"providerID":"aws:///us-east-1a/{{ hostvars[groups['role_worker'][0]]['instance_id'] }}" }}'
       kubectl patch node {{ hostvars[groups['role_worker'][1]]['private_dns_name'] }} -p '{"spec":{"providerID":"aws:///us-east-1a/{{ hostvars[groups['role_worker'][1]]['instance_id'] }}" }}'
 
-  - name: Deploy the required cloud-controller-manager 
+  - name: Deploy the required cloud-controller-manager
     shell: |
       cd /home/ubuntu
       curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
@@ -142,8 +142,8 @@ hosts: all
       helm repo add aws-cloud-controller-manager https://kubernetes.github.io/cloud-provider-aws
       helm repo update
       helm upgrade --install aws-cloud-controller-manager aws-cloud-controller-manager/aws-cloud-controller-manager --set image.tag=v1.20.0-alpha.0
-      
-  - name: Deploy Nginx Ingress 
+
+  - name: Deploy Nginx Ingress
     shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.2/deploy/static/provider/aws/deploy.yaml
 
   - name: Deploy AWS CSI Driver
@@ -152,7 +152,7 @@ hosts: all
 
   - name: copy the storage.yml file
     become: yes
-    copy: 
+    copy:
       src: ./storage.yml
       dest: /home/ubuntu/
 
