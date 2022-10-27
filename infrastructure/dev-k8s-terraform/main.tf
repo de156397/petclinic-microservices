@@ -43,12 +43,24 @@ resource "aws_security_group" "petclinic-kube-worker-sg" {
     to_port = 32767
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    protocol = "tcp"
+    from_port = 30000
+    to_port = 32767
+    ipv6_cidr_blocks = ["::/0"]
+  }
 
   ingress {
     protocol = "tcp"
     from_port = 22
     to_port = 22
     cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    protocol = "tcp"
+    from_port = 22
+    to_port = 22
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
@@ -63,6 +75,12 @@ resource "aws_security_group" "petclinic-kube-worker-sg" {
     from_port = 0
     to_port = 0
     cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress{
+    protocol = "-1"
+    from_port = 0
+    to_port = 0
+    ipv6_cidr_blocks = ["::/0"]
   }
   tags = {
     Name = "kube-worker-secgroup"
@@ -82,9 +100,21 @@ resource "aws_security_group" "petclinic-kube-master-sg" {
   }
   ingress {
     protocol = "tcp"
+    from_port = 22
+    to_port = 22
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  ingress {
+    protocol = "tcp"
     from_port = 80
     to_port = 80
     cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    protocol = "tcp"
+    from_port = 80
+    to_port = 80
+    ipv6_cidr_blocks = ["::/0"]
   }
   ingress {
     protocol = "tcp"
@@ -94,9 +124,21 @@ resource "aws_security_group" "petclinic-kube-master-sg" {
   }
   ingress {
     protocol = "tcp"
+    from_port = 6443
+    to_port = 6443
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  ingress {
+    protocol = "tcp"
     from_port = 443
     to_port = 443
     cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    protocol = "tcp"
+    from_port = 443
+    to_port = 443
+    ipv6_cidr_blocks = ["::/0"]
   }
   ingress {
     protocol = "tcp"
@@ -135,6 +177,12 @@ resource "aws_security_group" "petclinic-kube-master-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
+    protocol = "tcp"
+    from_port = 30000
+    to_port = 32767
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  ingress {
     protocol = "udp"
     from_port = 8472
     to_port = 8472
@@ -145,6 +193,12 @@ resource "aws_security_group" "petclinic-kube-master-sg" {
     from_port = 0
     to_port = 0
     cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    protocol = "-1"
+    from_port = 0
+    to_port = 0
+    ipv6_cidr_blocks = ["::/0"]
   }
   tags = {
     Name = "kube-master-secgroup"
